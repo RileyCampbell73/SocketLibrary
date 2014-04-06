@@ -1,18 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SocketLibrary", "SocketLibrary\SocketLibrary.vcxproj", "{4C9A2686-E219-4D90-B1A8-63A7EB009048}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SocketLibrary", "SocketLibrary\SocketLibrary.vcxproj", "{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		DebugDLL|Win32 = DebugDLL|Win32
 		Release|Win32 = Release|Win32
+		ReleaseDLL|Win32 = ReleaseDLL|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4C9A2686-E219-4D90-B1A8-63A7EB009048}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4C9A2686-E219-4D90-B1A8-63A7EB009048}.Debug|Win32.Build.0 = Debug|Win32
-		{4C9A2686-E219-4D90-B1A8-63A7EB009048}.Release|Win32.ActiveCfg = Release|Win32
-		{4C9A2686-E219-4D90-B1A8-63A7EB009048}.Release|Win32.Build.0 = Release|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.Debug|Win32.ActiveCfg = Debug|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.Debug|Win32.Build.0 = Debug|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.DebugDLL|Win32.ActiveCfg = DebugDLL|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.DebugDLL|Win32.Build.0 = DebugDLL|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.Release|Win32.ActiveCfg = Release|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.Release|Win32.Build.0 = Release|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.ReleaseDLL|Win32.ActiveCfg = ReleaseDLL|Win32
+		{543E1AEF-CCD1-4B5F-B817-5339CCE71D16}.ReleaseDLL|Win32.Build.0 = ReleaseDLL|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

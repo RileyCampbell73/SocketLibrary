@@ -55,7 +55,28 @@ public:
 	bool OpenConnection( const char * address, int port );
 };
 
+	
+class UDPSocket : MySocket{
+public:
 
+	UDPSocket( bool client): MySocket(){
+		
+		isClient = client;
+	}
+
+	~UDPSocket(){
+		// terminate
+		closesocket(hSocket);
+		WSACleanup();
+	}
+
+	boolean OpenConnection(const char * , int );
+
+	void Sendmessage(std::string);
+
+	void Sendmessage(std::string, const char *, int);
+
+};
 
 
 

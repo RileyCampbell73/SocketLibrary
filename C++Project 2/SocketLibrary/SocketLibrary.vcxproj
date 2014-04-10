@@ -156,10 +156,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SocketLib.hpp" />
+    <ClCompile Include="SocketLibrary.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SocketLibrary.cpp" />
+    <ClInclude Include="..\Include\SocketLib.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

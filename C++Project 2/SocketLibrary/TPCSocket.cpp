@@ -1,14 +1,15 @@
 #include "SocketLib.hpp"
 
+TCPSocket::TCPSocket(bool d) : Sockt_( new TCPSocket::MySocket(d) ) { }//WARNING HERE: 'boolean' : forcing value to bool 'true' or 'false' (performance warning)
+TCPSocket::~TCPSocket(){}
 
-	
-boolean TCPSocket::OpenConnection( const char * address, int port )
+bool TCPSocket::OpenConnection( const char * address, int port )
 {
 
 	return Sockt_->OpenConnection(address,port);
 }
 
-boolean TCPSocket::MySocket2::OpenConnection( const char * address, int port )
+bool TCPSocket::MySocket::OpenConnection( const char * address, int port )
 {
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	if(iResult != NO_ERROR)
@@ -17,7 +18,7 @@ boolean TCPSocket::MySocket2::OpenConnection( const char * address, int port )
 		return EXIT_FAILURE;
 	}
 
-	SOCKET hSocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
+	 hSocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 	if( hSocket == INVALID_SOCKET )
 	{
 		//cerr << "Error at socket(): " << WSAGetLastError << endl;

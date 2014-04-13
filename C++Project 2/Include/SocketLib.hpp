@@ -17,87 +17,68 @@
 #include <memory>
 #pragma comment (lib,"ws2_32.lib")
 
-class MySocket{
-	friend class TCPSocket;
-	friend class UDPSocket;
-public: 
-
-	MySocket(){//have this take in something to indicate whether its UDP or TCP. 
-				//ALSO maybe something to indicate whether its a client or server(maybe)
-	}
-
-	~MySocket(){
-		// terminate
-		closesocket(hSocket);
-		WSACleanup();}
-
-private:
-	WSAData wsaData;
-	SOCKET hSocket;
-	bool isClient;
-	sockaddr_in service;
-};
 
 class TCPSocket 
 {
-	class MySocket2; //forward declaration
-	std::unique_ptr<MySocket2> Sockt_;
+	class MySocket; //forward declaration
+	std::unique_ptr<MySocket> Sockt_;
 public:
-	TCPSocket(boolean);
-	~TCPSocket();
-	boolean OpenConnection( const char * address, int port );
+	TCPSocket(bool c);
+	virtual ~TCPSocket();
+	bool OpenConnection( const char * address, int port );
 };
 
-class TCPSocket::MySocket2{
+class TCPSocket::MySocket{
 	WSAData wsaData;
 	SOCKET hSocket;
 	bool isClient;
 	sockaddr_in service;
 public:
-	MySocket2(boolean client){isClient = client;}//WARNING HERE: 'boolean' : forcing value to bool 'true' or 'false' (performance warning)
+	MySocket(bool client){isClient = client;}
 
-	virtual ~MySocket2(){}
-	boolean OpenConnection(const char * , int );
+	virtual ~MySocket(){}
+	bool OpenConnection(const char * , int );
 
 };
 
 
-//NOT SURE WHAT THESE LINES DO....
-TCPSocket::TCPSocket(boolean c) : Sockt_( new TCPSocket::MySocket2(c) ) { }//WARNING HERE: 'boolean' : forcing value to bool 'true' or 'false' (performance warning)
-TCPSocket::~TCPSocket(){}
 
 class UDPSocket{ 
 	//IMPLEMENTING PIMPL
-	class MySocket2; //forward declaration
-	std::unique_ptr<MySocket2> Sockt_;
-public:
-	UDPSocket(boolean);
+	class MySocket; //forward declaration
+	std::unique_ptr<MySocket> Sockt_;
+public:	
+	UDPSocket(bool);
 	virtual ~UDPSocket();// terminate
 		//closesocket(hSocket);
 		//WSACleanup();
-	
-	boolean OpenConnection(const char * , int );
+
+	bool OpenConnection(const char * , int );
 	void Sendmessage(std::string);
 	void Sendmessage(std::string, const char *, int);
+	std::string RecieveMessage();
+	std::string RecieveMessage(sockaddr);
 };
 
-class UDPSocket::MySocket2{
+class UDPSocket::MySocket{
 	WSAData wsaData;
 	SOCKET hSocket;
 	bool isClient;
 	sockaddr_in service;
+	sockaddr client;
 public:
-	MySocket2(boolean client){isClient = client;}//WARNING HERE: 'boolean' : forcing value to bool 'true' or 'false' (performance warning)
-	~MySocket2(){}
-	boolean OpenConnection(const char * , int );
+	MySocket(bool client){isClient = client;}
+	~MySocket(){}
+	bool OpenConnection(const char * , int );
 	void Sendmessage(std::string);
 	void Sendmessage(std::string, const char *, int);
+	std::string RecieveMessage();
+	std::string RecieveMessage(sockaddr);
 
 };
 
-//NOT SURE WHAT THESE LINES DO....
-UDPSocket::UDPSocket(boolean c) : Sockt_( new UDPSocket::MySocket2(c) ) { }
-UDPSocket::~UDPSocket(){}
+
+
 
 
 #endif

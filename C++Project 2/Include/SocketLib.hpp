@@ -1,5 +1,5 @@
-#if !defined( GUARD_MY_LIB )
-#define GUARD_MY_LIB
+#if !defined( SOCKET_LIB_GUARD )
+#define SOCKET_LIB_GUARD
 
 #if defined(_DEBUG) && !defined(_DLL)
 #pragma comment (lib, "SocketLibrary-mt-s-gd.lib")
@@ -24,8 +24,8 @@ class TCPSocket
 	std::unique_ptr<MySocket> Sockt_;
 public:
 	TCPSocket(bool c);
-	virtual ~TCPSocket();
-	bool OpenConnection( const char * address, int port );
+	~TCPSocket();
+	bool OpenConnection( const char * address, USHORT port );
 };
 
 class TCPSocket::MySocket{
@@ -33,15 +33,17 @@ class TCPSocket::MySocket{
 	SOCKET hSocket;
 	bool isClient;
 	sockaddr_in service;
+	SOCKET hAccepted; // socket handle for the server, uses it to accept a connection
 public:
 	MySocket(bool client){isClient = client;}
 
 	virtual ~MySocket(){}
-	bool OpenConnection(const char * , int );
+	bool OpenConnection(const char * , USHORT );
+
+	int SendMessage(std::string);
+	std::string ReceiveMessage();
 
 };
-
-
 
 class UDPSocket{ 
 	//IMPLEMENTING PIMPL

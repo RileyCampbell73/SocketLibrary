@@ -55,9 +55,11 @@ public:
 
 	bool OpenConnection(const char * , int );
 	void Sendmessage(std::string);
-	void Sendmessage(std::string, const char *, int);
+	void Sendmessage(std::string, sockaddr);
 	std::string RecieveMessage();
 	std::string RecieveMessage(sockaddr);
+	//this will give the users a way to get the client address to the server
+	sockaddr GetLastClientAddr();
 };
 
 class UDPSocket::MySocket{
@@ -68,12 +70,17 @@ class UDPSocket::MySocket{
 	sockaddr client;
 public:
 	MySocket(bool client){isClient = client;}
-	~MySocket(){}
+	~MySocket(){
+	closesocket(hSocket);
+	WSACleanup();
+	}
 	bool OpenConnection(const char * , int );
 	void Sendmessage(std::string);
-	void Sendmessage(std::string, const char *, int);
+	void Sendmessage(std::string,sockaddr);
 	std::string RecieveMessage();
 	std::string RecieveMessage(sockaddr);
+	//this will give the users a way to get the client address to the server
+	sockaddr GetLastClientAddr();
 
 };
 

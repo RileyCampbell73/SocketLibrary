@@ -46,7 +46,8 @@ public:
 class UDPSocket{ 
 	//IMPLEMENTING PIMPL
 	class MySocket; //forward declaration
-	std::unique_ptr<MySocket> Sockt_;
+	std::shared_ptr<MySocket> Sockt_;
+	
 public:	
 	UDPSocket(bool);
 	virtual ~UDPSocket();// terminate

@@ -1,56 +1,79 @@
 #include <SocketLib.hpp>
 #include <iostream>
 #include <vector>
+#include <thread>
 using namespace std;
 
+class Client{
+
+public:
+	string name;
+	sockaddr address;
+
+	Client(string n, sockaddr a){
+		name = n;
+		address = a;
+	}
+	~Client(){}
+};
+
+vector<Client> clients;
+void Listen(UDPSocket &sock){
+
+	for (;;){
+	string message = sock.RecieveMessage();
+		//depending on message, send it to other clients
+		//Listen for specific message ( differentiate from normal messages somehow)
+		if(message.substr(0, 15) == "NEWCLIENTNAMEIS"){//CHANGE THIS. FIND A BETTER WAY THAT ISNT DUPLICATABLE
+			Client c = Client(message.substr(15, message.length()),sock.GetLastClientAddr());
+			clients.push_back(c);
+		}
+		//any other messages get sent to all other clients (not sending the message back to the client who sent it)
+		else{
+			cout << message << endl;
+			sockaddr sendytemp = sock.GetLastClientAddr();
+			char str2[INET_ADDRSTRLEN];
+			inet_ntop(AF_INET, (sendytemp.sa_data), str2, INET_ADDRSTRLEN);
+
+			for(std::vector<Client>::iterator it = clients.begin(); it != clients.end(); ++it) {
+				
+				char str[INET_ADDRSTRLEN];
+				inet_ntop(AF_INET, &(it->address.sa_data), str, INET_ADDRSTRLEN);
+	
+				if ((string)str != (string)str2){//Have to cast to a string. comparing chars was problematic
+					sock.Sendmessage(message,it->address);
+				}
+			}
+			
+		}
+	}
+}
+
 int main(){
-	vector<sockaddr> socks;
-	UDPSocket SICK2 =  UDPSocket(false);
+
+
+	UDPSocket socket = UDPSocket(false);// set UDPSocket to false to indicate this is a server
 	
 	string address = "127.0.0.1";
-	if (!SICK2.OpenConnection(address.c_str(), 49153)){
+	if (!socket.OpenConnection(address.c_str(), 49153)){
 		//error handling stuff here!!!!
 	}
-	else
-		cout << "Connection established"<<endl;
+	cout << "Server has started" << endl;
+	
+	
+	//start a listening thread here that will listen to the socket for clients
+		//Dont use a thread to listen. Spawn a thread when a message is recieved.
+	thread t( Listen,socket );
+	t.join();
 
-		cout << "Looping until '!quit' is recieved"<<endl;
-	for (;;){
-		
-		//int n = recvfrom(hSocket,msg,MAX_LINE,0,&clientAddress,&cbClientAddress);
-		string butts = SICK2.RecieveMessage();
-		//const char * msg = butts.c_str();
-		//char  msg2[256];
-		//strncpy(msg2,msg,256);
-		//msg2[0] = toupper(msg[0]);
-		//msg2[min(0,255)]=0;
-		const char * som = SICK2.GetLastClientAddr().sa_data;
-		bool test = false;
-		for (unsigned i=0; i < socks.size(); i++) {
-			if (som == socks[i].sa_data)//this doesnt work for some reason?//How can I compare these?//overload?
-				test = true;
-		}
-		
-		if (test == false){
-		socks.push_back(SICK2.GetLastClientAddr());
-		}
-		cout << "Recv: " << butts <<" From: " << som << endl;
-		
-		
-		if(!strcmp(butts.c_str(),"!quit")) {
-			string const terminateMsg = "server exit";
-			//sendto(hSocket,terminateMsg.c_str(), terminateMsg.size(), 0, &clientAddress, cbClientAddress);
-			SICK2.Sendmessage(terminateMsg,socks[1]);
-			SICK2.Sendmessage("bye",socks[0]);//THIS CLIENT ISNT WAITING TO RECIEVE A MESSAGE SO IT WILL NEVER GET IT
-			//ONLY WAY TO ALWAYS BE LISTENING IS WITH THREADS
+	//start a listening thread here that will listen to the socket for clients
+	
+
+	
 
 
-			break;
-		}
+	return 0;
 
-		//sendto(hSocket,msg,n,0,&clientAddress,cbClientAddress);
-		SICK2.Sendmessage(butts);
-	}
 	
 	
 	

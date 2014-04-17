@@ -5,12 +5,22 @@ UDPSocket::UDPSocket(bool c) : Sockt_( new UDPSocket::MySocket(c) ) { }
 //deconstructor
 UDPSocket::~UDPSocket(){}
 
+std::string UDPSocket::GetLastClientIPAddr(){
+	return Sockt_->GetLastClientIPAddr();
+}
+
+std::string UDPSocket::MySocket::GetLastClientIPAddr(){
+	char ipAddress[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, (client.sa_data), ipAddress, INET_ADDRSTRLEN);
+	return (std::string)ipAddress;
+}
+
 //this will give the users a way to get the client address to the server
-sockaddr UDPSocket::GetLastClientAddr(){
-	return Sockt_-> GetLastClientAddr();
+sockaddr UDPSocket::GetLastClientSockaddr(){
+	return Sockt_-> GetLastClientSockaddr();
 }
 //this will give the users a way to get the client address to the server
-sockaddr UDPSocket::MySocket::GetLastClientAddr(){
+sockaddr UDPSocket::MySocket::GetLastClientSockaddr(){
 	return client;
 }
 
@@ -39,7 +49,53 @@ std::string UDPSocket::MySocket::RecieveMessage(){
 
 }
 
+std::string UDPSocket::RecieveMessage(int timeOut){
+	return Sockt_->RecieveMessage(timeOut);
+}
 
+std::string UDPSocket::MySocket::RecieveMessage(int timeOut){
+	
+	fd_set fds ;
+	int n ;
+	struct timeval tv ;
+
+	// Set up the file descriptor set.
+	FD_ZERO(&fds) ;
+	FD_SET(hSocket, &fds) ;
+
+	// Set up the struct timeval for the timeout.
+	tv.tv_sec = timeOut ;
+	tv.tv_usec = 0 ;
+
+	// Wait until timeout or data received.
+	n = select ( hSocket, &fds, NULL, NULL, &tv ) ;
+	if ( n == 0)
+	{ 
+	  return"!TIMEOUT!";
+	  //return 0 ;
+	}
+	else if( n == -1 )
+	{
+	  return "Error..\n";
+	 // return 1;   
+
+	}
+
+	if (isClient == true){
+		int const MAX_LINE = 256;
+		char msg[MAX_LINE];
+		socklen_t cbServiceAddress = sizeof(service);
+		int n = recvfrom(hSocket,msg,MAX_LINE,0,NULL,NULL);
+		return msg;
+	}
+	else{
+		int const MAX_LINE = 256;
+		char msg[MAX_LINE];
+		socklen_t cbClientAddress = sizeof(client);
+		int n = recvfrom(hSocket,msg,MAX_LINE,0,(sockaddr*)&client,&cbClientAddress);
+		return msg;
+	}
+}
 
 bool UDPSocket::OpenConnection(const char * address, int port){
 	return Sockt_ ->OpenConnection (address, port);

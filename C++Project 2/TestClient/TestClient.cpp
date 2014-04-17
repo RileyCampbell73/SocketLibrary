@@ -3,12 +3,12 @@
 #include <thread>
 using namespace std;
 
+bool done = false;
+
 void Listen(UDPSocket &sock){
 
-	for(;;){
+	while (!done){
 	string message = sock.RecieveMessage();
-	//wait for unregistration message then end loop
-		//else
 	cout<< message<<endl;
 	}
 }
@@ -29,23 +29,34 @@ int main(){
 		//after opening, send message to server (something different from other messages) to register this client
 			//maybe ask user for a username to use for messages
 		cout <<"Welcome to the chat room. What would you like your username to be? " <<endl;
-		
 		getline(cin,name);
-		socket.Sendmessage("NEWCLIENTNAMEIS" + name);
-		cout << " you are now connected as " << name<<"."<<endl;
+		socket.Sendmessage("!NEWCLIENT!" + name);
+		//SHOULD RECIEVE CONNECTION CONFIRMATION MESSAGE?
+		cout << " you are now connected as " << name<<". Type '!quit' to quit the chat client."<<endl;
 	}
+
 	//meanwhile, have a seperate thread to listen for messages then display them.
 	thread t( Listen,socket );
 	//t.join();
 	string line;
-	//then use getlineto send messages
+	//then use getline to send messages
 	while(getline(cin,line)) {
-		socket.Sendmessage(name + " : " +line);	
-	//until the user wants to quit. 
-	// on cleanup, send another message to server to unregister this client
+		//until the user wants to quit.
+		if (line.substr(0,5) == "!quit"){
+			socket.Sendmessage("!LEAVINGCLIENT!");
+			done = true;
+			t.join();
+			break;
+		}
+		else{
+			socket.Sendmessage(name + " : " +line);	
+		}
+		
+	 
+	// on cleanup, send another message to server to unregister this client?
 	}
-	t.join();
 	
+
 
 
 

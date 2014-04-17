@@ -58,9 +58,11 @@ public:
 	void Sendmessage(std::string);
 	void Sendmessage(std::string, sockaddr);
 	std::string RecieveMessage();
+	std::string RecieveMessage(int);
 	std::string RecieveMessage(sockaddr);
 	//this will give the users a way to get the client address to the server
-	sockaddr GetLastClientAddr();
+	sockaddr GetLastClientSockaddr();
+	std::string GetLastClientIPAddr();
 };
 
 class UDPSocket::MySocket{
@@ -79,9 +81,11 @@ public:
 	void Sendmessage(std::string);
 	void Sendmessage(std::string,sockaddr);
 	std::string RecieveMessage();
+	std::string RecieveMessage(int);
 	std::string RecieveMessage(sockaddr);
 	//this will give the users a way to get the client address to the server
-	sockaddr GetLastClientAddr();
+	sockaddr GetLastClientSockaddr();
+	std::string GetLastClientIPAddr();
 
 };
 

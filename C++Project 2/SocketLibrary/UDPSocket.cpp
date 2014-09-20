@@ -1,3 +1,7 @@
+// File:  UDPSocket.cpp
+// Purpose:  This is the implementation of the UDPSocket class.  It contains both the abstraction and implementation code.  The socket handles and guts of our implementation will be hidden from the user by the use of this bridge
+// Authors:  James Haig, Riley Campbell
+// Date:  April 21, 2014
 #include "SocketLib.hpp"
 
 //constructor
@@ -5,10 +9,12 @@ UDPSocket::UDPSocket(bool c) : Sockt_( new UDPSocket::MySocket(c) ) { }
 //deconstructor
 UDPSocket::~UDPSocket(){}
 
+//returns the last clients IP address
 std::string UDPSocket::GetLastClientIPAddr(){
 	return Sockt_->GetLastClientIPAddr();
 }
 
+//returns the last clients IP address
 std::string UDPSocket::MySocket::GetLastClientIPAddr(){
 	char ipAddress[INET_ADDRSTRLEN];
 	inet_ntop(AF_INET, (client.sa_data), ipAddress, INET_ADDRSTRLEN);
@@ -19,40 +25,39 @@ std::string UDPSocket::MySocket::GetLastClientIPAddr(){
 sockaddr UDPSocket::GetLastClientSockaddr(){
 	return Sockt_-> GetLastClientSockaddr();
 }
+
 //this will give the users a way to get the client address to the server
 sockaddr UDPSocket::MySocket::GetLastClientSockaddr(){
 	return client;
 }
 
+//recieves messages from the socket
 std::string UDPSocket::RecieveMessage(){
-	
 	return Sockt_->RecieveMessage();
-
 }
-
+//recieves messages from the socket
 std::string UDPSocket::MySocket::RecieveMessage(){
 
 	if (isClient == true){
 		int const MAX_LINE = 256;
 		char msg[MAX_LINE];
-		socklen_t cbServiceAddress = sizeof(service);
-		int n = recvfrom(hSocket,msg,MAX_LINE,0,NULL,NULL);
+		recvfrom(hSocket,msg,MAX_LINE,0,NULL,NULL);
 		return msg;
 	}
 	else{
 		int const MAX_LINE = 256;
 		char msg[MAX_LINE];
 		socklen_t cbClientAddress = sizeof(client);
-		int n = recvfrom(hSocket,msg,MAX_LINE,0,(sockaddr*)&client,&cbClientAddress);
+		recvfrom(hSocket,msg,MAX_LINE,0,(sockaddr*)&client,&cbClientAddress);
 		return msg;
 	}
 
 }
-
+//recieves messages from the socket. Will timeout after the alloted seconds
 std::string UDPSocket::RecieveMessage(int timeOut){
 	return Sockt_->RecieveMessage(timeOut);
 }
-
+//recieves messages from the socket. Will timeout after the alloted seconds
 std::string UDPSocket::MySocket::RecieveMessage(int timeOut){
 	
 	fd_set fds ;
@@ -68,7 +73,7 @@ std::string UDPSocket::MySocket::RecieveMessage(int timeOut){
 	tv.tv_usec = 0 ;
 
 	// Wait until timeout or data received.
-	n = select ( hSocket, &fds, NULL, NULL, &tv ) ;
+	n = select ( (int)hSocket, &fds, NULL, NULL, &tv ) ;
 	if ( n == 0)
 	{ 
 	  return"!TIMEOUT!";
@@ -84,44 +89,39 @@ std::string UDPSocket::MySocket::RecieveMessage(int timeOut){
 	if (isClient == true){
 		int const MAX_LINE = 256;
 		char msg[MAX_LINE];
-		socklen_t cbServiceAddress = sizeof(service);
-		int n = recvfrom(hSocket,msg,MAX_LINE,0,NULL,NULL);
+		recvfrom(hSocket,msg,MAX_LINE,0,NULL,NULL);
 		return msg;
 	}
 	else{
 		int const MAX_LINE = 256;
 		char msg[MAX_LINE];
 		socklen_t cbClientAddress = sizeof(client);
-		int n = recvfrom(hSocket,msg,MAX_LINE,0,(sockaddr*)&client,&cbClientAddress);
+		recvfrom(hSocket,msg,MAX_LINE,0,(sockaddr*)&client,&cbClientAddress);
 		return msg;
 	}
 }
 
-bool UDPSocket::OpenConnection(const char * address, int port){
-	return Sockt_ ->OpenConnection (address, port);
-}
-
-void UDPSocket::Sendmessage(std::string message){
-	Sockt_->Sendmessage(message);
-}
+//sends a message to a specific socket address
 void UDPSocket::Sendmessage(std::string message, sockaddr reciever){
 	Sockt_->Sendmessage(message, reciever);
 }
+
+//sends a message to a specific socket address
 void UDPSocket::MySocket::Sendmessage(std::string message, sockaddr reciever){
 
-
-	/*sockaddr_in clientAddress = { 0 };
-	clientAddress.sin_family = AF_INET;
-	clientAddress.sin_port = htons(port);
-	clientAddress.sin_addr.s_addr= inet_addr(address);*/
-
-	sendto(hSocket, message.c_str(), message.size() + 1, 0, 
+	sendto(hSocket, message.c_str(), (int)message.size() + 1, 0, 
 		(sockaddr*)&reciever, 
 		sizeof(reciever)
 		);
 }
 
-bool UDPSocket::MySocket::OpenConnection(const char * address, int port){
+//opens the connection to the socket
+bool UDPSocket::OpenConnection(const char * address, USHORT port){
+	return Sockt_ ->OpenConnection (address, port);
+}
+
+//opens the connection to the socket
+bool UDPSocket::MySocket::OpenConnection(const char * address, USHORT port){
 	int iResult = WSAStartup( MAKEWORD(2,2), &wsaData );
 	if(iResult!=0) {
 		//cerr<<"WSAStartup failed: " << iResult << endl;
@@ -146,45 +146,29 @@ bool UDPSocket::MySocket::OpenConnection(const char * address, int port){
 			//	return EXIT_FAILURE;
 				return false;	
 			}
-			
-			//recieve connection establishment from client
-	//		socklen_t cbClientAddress = sizeof(client);
-	//		int const MAX_LINE = 256;
-	//		char msg[MAX_LINE];
 
-	//		int n = recvfrom(hSocket,msg,MAX_LINE,0,&client,&cbClientAddress);
-	//		msg[0] = toupper(msg[0]);
-	//		msg[min(n,255)]=0;
-	//		std::string butts(msg);
-	//		sendto(hSocket,butts.c_str(),butts.size(),0,&client,sizeof(client));
-
-	//}
-	//else{//establishes connection with the server
-	//	std::string msg = "Connection Established";
-	//	sendto(hSocket,msg.c_str(),msg.size(),0,(sockaddr*)&service,sizeof(service));
-	//	int const MAX_LINE = 256;
-	//	char msg2[MAX_LINE];
-	//	socklen_t cbServiceAddress = sizeof(service);
-	//	int n = recvfrom(hSocket,msg2,MAX_LINE,0,(sockaddr*)&service,&cbServiceAddress);
-
-	//	std::string butts2 (msg2);
-	//	int sexy = 0;
 	}
 	return true;
 }
 
+//send a message
+void UDPSocket::Sendmessage(std::string message){
+	Sockt_->Sendmessage(message);
+}
+
+//send a message
 void UDPSocket::MySocket::Sendmessage(std::string message){
 
 	if (isClient==true){
 
-	sendto(hSocket, message.c_str(), message.size() + 1, 0, 
+	sendto(hSocket, message.c_str(), (int)message.size() + 1, 0, 
 			(sockaddr*)&service, 
 			sizeof(service)
 			);
 
 	}
 	else{
-		sendto(hSocket, message.c_str(), message.size() + 1, 0, 
+		sendto(hSocket, message.c_str(), (int)message.size() + 1, 0, 
 			(sockaddr*)&client, 
 			sizeof(client)
 			);

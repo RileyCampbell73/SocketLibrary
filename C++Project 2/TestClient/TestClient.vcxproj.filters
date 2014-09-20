@@ -15,23 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-<<<<<<< HEAD
-    <ClCompile Include="SocketLibrary.cpp">
-=======
-    <ClCompile Include="UDPSocket.cpp">
+    <ClCompile Include="ChatClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TPCSocket.cpp">
->>>>>>> Riley-Branch
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Include\SocketLib.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
